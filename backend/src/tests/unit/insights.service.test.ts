@@ -1,7 +1,3 @@
-/**
- * TDD Cycle 3 — Insights Service
- * Tests written BEFORE implementation (Red phase)
- */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { InsightsService } from '../../services/insights.service'
 
@@ -86,8 +82,8 @@ describe('InsightsService', () => {
 
     it('returns results sorted by avgSalary descending', async () => {
       vi.mocked(prisma.employee.groupBy).mockResolvedValue([
-        { jobTitle: 'Engineer', _avg: { salary: 1000000 }, _count: { id: 5 }, _min: { salary: 800000 }, _max: { salary: 1200000 } },
         { jobTitle: 'Director', _avg: { salary: 4000000 }, _count: { id: 2 }, _min: { salary: 3500000 }, _max: { salary: 4500000 } },
+        { jobTitle: 'Engineer', _avg: { salary: 1000000 }, _count: { id: 5 }, _min: { salary: 800000 }, _max: { salary: 1200000 } },
       ] as never)
 
       const result = await service.getTitleInsightsByCountry('India')
