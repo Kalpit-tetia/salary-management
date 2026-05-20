@@ -1,8 +1,3 @@
-/**
- * TDD Cycle 2 — Employee Service
- * Tests written BEFORE implementation (Red phase)
- * Service layer: business logic + validation
- */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { EmployeeService } from '../../services/employee.service'
 import { EmployeeStatus } from '../../models/employee.model'
