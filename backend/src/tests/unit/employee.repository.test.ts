@@ -1,7 +1,3 @@
-/**
- * TDD Cycle 1 — Employee Repository
- * Tests written BEFORE implementation (Red phase)
- */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { EmployeeRepository } from '../../repositories/employee.repository'
 import { EmployeeStatus } from '../../models/employee.model'
