@@ -1,12 +1,3 @@
-/**
- * Seed Script — 10,000 employees
- *
- * Performance strategy:
- * 1. Batch inserts of 500 rows (avoids SQLite lock contention)
- * 2. Single transaction wraps all batches
- * 3. TRUNCATE before re-seed (no upsert overhead)
- * 4. Pre-compute random values before DB calls
- */
 import { PrismaClient } from '@prisma/client'
 import fs from 'fs'
 import path from 'path'
@@ -129,19 +120,19 @@ function generateEmployees(count: number) {
 
 async function seed() {
   const startTime = performance.now()
-  console.log(`\n🌱 Starting seed: ${TOTAL_EMPLOYEES.toLocaleString()} employees\n`)
+  console.log(`\nStarting seed: ${TOTAL_EMPLOYEES.toLocaleString()} employees\n`)
 
   // Step 1: Clear existing data
-  console.log('🗑️  Clearing existing employees...')
+  console.log('Clearing existing employees...')
   await prisma.employee.deleteMany()
 
   // Step 2: Pre-generate all data in memory (fast)
-  console.log('⚙️  Generating employee data...')
+  console.log('Generating employee data...')
   const employees = generateEmployees(TOTAL_EMPLOYEES)
 
   // Step 3: Batch insert inside a transaction
   const batches = Math.ceil(TOTAL_EMPLOYEES / BATCH_SIZE)
-  console.log(`📦 Inserting ${batches} batches of ${BATCH_SIZE}...\n`)
+  console.log(`Inserting ${batches} batches of ${BATCH_SIZE}...\n`)
 
   await prisma.$transaction(
     async (tx) => {
@@ -159,13 +150,13 @@ async function seed() {
   const elapsed = ((performance.now() - startTime) / 1000).toFixed(2)
   const finalCount = await prisma.employee.count()
 
-  console.log(`\n\n✅ Seeded ${finalCount.toLocaleString()} employees in ${elapsed}s`)
-  console.log(`📊 ~${Math.round(TOTAL_EMPLOYEES / parseFloat(elapsed)).toLocaleString()} records/second\n`)
+  console.log(`\n\nSeeded ${finalCount.toLocaleString()} employees in ${elapsed}s`)
+  console.log(`~${Math.round(TOTAL_EMPLOYEES / parseFloat(elapsed)).toLocaleString()} records/second\n`)
 }
 
 seed()
   .catch((e) => {
-    console.error('❌ Seed failed:', e)
+    console.error('Seed failed:', e)
     process.exit(1)
   })
   .finally(() => prisma.$disconnect())
