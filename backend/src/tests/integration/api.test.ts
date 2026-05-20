@@ -1,12 +1,7 @@
-/**
- * TDD Cycle 4 — Employee API Integration Tests
- * Tests the full HTTP layer using Supertest
- */
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import request from 'supertest'
 import { createApp } from '../../app'
 
-// Mock service layer — integration tests don't hit DB
 vi.mock('../../services/employee.service', () => ({
   NotFoundError: class NotFoundError extends Error {
     constructor(msg: string) { super(msg); this.name = 'NotFoundError' }
@@ -16,65 +11,111 @@ vi.mock('../../services/employee.service', () => ({
   },
   EmployeeService: vi.fn().mockImplementation(() => ({
     getEmployees: vi.fn().mockResolvedValue({
-      data: [mockEmployee],
+      data: [{
+        id: 'clxtest001',
+        fullName: 'Amit Kumar',
+        email: 'amit.kumar@example.com',
+        jobTitle: 'Data Engineer',
+        department: 'Data',
+        country: 'India',
+        currency: 'INR',
+        salary: 1800000,
+        hireDate: new Date('2020-01-15').toISOString(),
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }],
       total: 1,
       page: 1,
       limit: 20,
       totalPages: 1,
     }),
-    getEmployeeById: vi.fn().mockResolvedValue(mockEmployee),
-    createEmployee: vi.fn().mockResolvedValue(mockEmployee),
-    updateEmployee: vi.fn().mockResolvedValue(mockEmployee),
-    deleteEmployee: vi.fn().mockResolvedValue({ ...mockEmployee, status: 'INACTIVE' }),
+    getEmployeeById: vi.fn().mockResolvedValue({
+      id: 'clxtest001',
+      fullName: 'Amit Kumar',
+      email: 'amit.kumar@example.com',
+      jobTitle: 'Data Engineer',
+      department: 'Data',
+      country: 'India',
+      currency: 'INR',
+      salary: 1800000,
+      hireDate: new Date('2020-01-15').toISOString(),
+      status: 'ACTIVE',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }),
+    createEmployee: vi.fn().mockResolvedValue({
+      id: 'clxtest001',
+      fullName: 'Amit Kumar',
+      email: 'amit.kumar@example.com',
+      jobTitle: 'Data Engineer',
+      department: 'Data',
+      country: 'India',
+      currency: 'INR',
+      salary: 1800000,
+      hireDate: new Date('2020-01-15').toISOString(),
+      status: 'ACTIVE',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }),
+    updateEmployee: vi.fn().mockResolvedValue({
+      id: 'clxtest001',
+      fullName: 'Amit Kumar',
+      email: 'amit.kumar@example.com',
+      jobTitle: 'Data Engineer',
+      department: 'Data',
+      country: 'India',
+      currency: 'INR',
+      salary: 1800000,
+      hireDate: new Date('2020-01-15').toISOString(),
+      status: 'ACTIVE',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }),
+    deleteEmployee: vi.fn().mockResolvedValue({
+      id: 'clxtest001',
+      fullName: 'Amit Kumar',
+      email: 'amit.kumar@example.com',
+      jobTitle: 'Data Engineer',
+      department: 'Data',
+      country: 'India',
+      currency: 'INR',
+      salary: 1800000,
+      hireDate: new Date('2020-01-15').toISOString(),
+      status: 'INACTIVE',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }),
   })),
 }))
 
 vi.mock('../../services/insights.service', () => ({
   InsightsService: vi.fn().mockImplementation(() => ({
-    getCountryInsights: vi.fn().mockResolvedValue(mockCountryInsights),
+    getCountryInsights: vi.fn().mockResolvedValue({
+      country: 'India',
+      headcount: 500,
+      minSalary: 400000,
+      maxSalary: 8000000,
+      avgSalary: 1900000,
+      medianSalary: 1600000,
+      p25Salary: 1000000,
+      p75Salary: 2800000,
+      currency: 'INR',
+    }),
     getTitleInsightsByCountry: vi.fn().mockResolvedValue([]),
-    getOrgOverview: vi.fn().mockResolvedValue(mockOverview),
+    getOrgOverview: vi.fn().mockResolvedValue({
+      totalEmployees: 10000,
+      activeEmployees: 9200,
+      totalPayroll: 15000000000,
+      avgSalary: 1500000,
+      countriesCount: 8,
+      departmentsCount: 12,
+      topPaidEmployees: [],
+    }),
     getDepartmentInsights: vi.fn().mockResolvedValue([]),
     getAvailableCountries: vi.fn().mockResolvedValue(['India', 'USA']),
   })),
 }))
-
-const mockEmployee = {
-  id: 'clxtest001',
-  fullName: 'Amit Kumar',
-  email: 'amit.kumar@example.com',
-  jobTitle: 'Data Engineer',
-  department: 'Data',
-  country: 'India',
-  currency: 'INR',
-  salary: 1800000,
-  hireDate: new Date('2020-01-15').toISOString(),
-  status: 'ACTIVE',
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-}
-
-const mockCountryInsights = {
-  country: 'India',
-  headcount: 500,
-  minSalary: 400000,
-  maxSalary: 8000000,
-  avgSalary: 1900000,
-  medianSalary: 1600000,
-  p25Salary: 1000000,
-  p75Salary: 2800000,
-  currency: 'INR',
-}
-
-const mockOverview = {
-  totalEmployees: 10000,
-  activeEmployees: 9200,
-  totalPayroll: 15000000000,
-  avgSalary: 1500000,
-  countriesCount: 8,
-  departmentsCount: 12,
-  topPaidEmployees: [],
-}
 
 const app = createApp()
 
@@ -82,7 +123,6 @@ describe('Employee API', () => {
   describe('GET /api/employees', () => {
     it('returns 200 with paginated employee list', async () => {
       const res = await request(app).get('/api/employees')
-
       expect(res.status).toBe(200)
       expect(res.body).toHaveProperty('data')
       expect(res.body).toHaveProperty('total')
@@ -92,13 +132,11 @@ describe('Employee API', () => {
 
     it('accepts country filter query param', async () => {
       const res = await request(app).get('/api/employees?country=India')
-
       expect(res.status).toBe(200)
     })
 
     it('accepts pagination params', async () => {
       const res = await request(app).get('/api/employees?page=2&limit=10')
-
       expect(res.status).toBe(200)
     })
   })
@@ -106,7 +144,6 @@ describe('Employee API', () => {
   describe('GET /api/employees/:id', () => {
     it('returns 200 with employee data for valid id', async () => {
       const res = await request(app).get('/api/employees/clxtest001')
-
       expect(res.status).toBe(200)
       expect(res.body.id).toBe('clxtest001')
       expect(res.body.fullName).toBe('Amit Kumar')
@@ -126,7 +163,6 @@ describe('Employee API', () => {
           salary: 1800000,
           hireDate: '2020-01-15',
         })
-
       expect(res.status).toBe(201)
       expect(res.body.fullName).toBe('Amit Kumar')
     })
@@ -137,7 +173,6 @@ describe('Employee API', () => {
       const res = await request(app)
         .put('/api/employees/clxtest001')
         .send({ salary: 2000000 })
-
       expect(res.status).toBe(200)
     })
   })
@@ -145,7 +180,6 @@ describe('Employee API', () => {
   describe('DELETE /api/employees/:id', () => {
     it('returns 200 and soft deletes employee', async () => {
       const res = await request(app).delete('/api/employees/clxtest001')
-
       expect(res.status).toBe(200)
       expect(res.body.status).toBe('INACTIVE')
     })
@@ -156,7 +190,6 @@ describe('Insights API', () => {
   describe('GET /api/insights/overview', () => {
     it('returns org overview with key metrics', async () => {
       const res = await request(app).get('/api/insights/overview')
-
       expect(res.status).toBe(200)
       expect(res.body).toHaveProperty('totalEmployees')
       expect(res.body).toHaveProperty('activeEmployees')
@@ -168,7 +201,6 @@ describe('Insights API', () => {
   describe('GET /api/insights/country/:country', () => {
     it('returns salary stats for a country', async () => {
       const res = await request(app).get('/api/insights/country/India')
-
       expect(res.status).toBe(200)
       expect(res.body.country).toBe('India')
       expect(res.body).toHaveProperty('minSalary')
@@ -181,7 +213,6 @@ describe('Insights API', () => {
   describe('GET /api/insights/country/:country/titles', () => {
     it('returns title breakdown for a country', async () => {
       const res = await request(app).get('/api/insights/country/India/titles')
-
       expect(res.status).toBe(200)
       expect(Array.isArray(res.body)).toBe(true)
     })
@@ -190,7 +221,6 @@ describe('Insights API', () => {
   describe('GET /api/insights/countries', () => {
     it('returns list of countries with active employees', async () => {
       const res = await request(app).get('/api/insights/countries')
-
       expect(res.status).toBe(200)
       expect(Array.isArray(res.body)).toBe(true)
       expect(res.body).toContain('India')
